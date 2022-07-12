@@ -20,4 +20,4 @@ _start:
 
     @ Test turn on
     ldr r1,=GPIOVAL                     @ Load set value
-    str r1, [r0,#GPFSET0]               @ Store it in set register
+    str r1, [r0,#GPSET0]               @ Store it in set register
