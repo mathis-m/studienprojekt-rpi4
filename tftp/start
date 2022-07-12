@@ -1,0 +1,4 @@
+#!/bin/sh
+
+busybox syslogd -n -O /dev/stdout &
+in.tftpd -Lvvv -u tftp --secure /tftpboot -m /etc/tftp/mapfile

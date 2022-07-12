@@ -1,0 +1,6 @@
+# Replace all TFTP file requests with one, that is prefixed with the IP-Address,
+# i.e. "tftp get command.bin" will result in "tftp get 192.168.176.10/command.bin"
+# Therefore, by using soft-links, we may put Raspberries into their specific
+# TFTP-Boot Linux Distribution (like all run Raspbian-2018, while one has Raspbian-2019)
+
+r .* \i/\0

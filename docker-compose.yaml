@@ -1,0 +1,29 @@
+version: "2.4"
+
+services:
+  tftp:
+    build: tftp
+    network_mode: "host"
+    volumes:
+      - tftp_data:/tftpboot
+
+  dhcp:
+   build: dnsmasq
+   network_mode: "host"
+   cap_add:
+    - NET_ADMIN
+
+  nfs:
+   image: "erichough/nfs-server"
+   volumes:
+    - nfs_data:/nfs
+    - /lib/modules:/lib/modules:ro
+   environment:
+    - NFS_EXPORT_0=/nfs    *(rw,sync,no_root_squash,no_subtree_check)
+    - NFS_LOG_LEVEL=DEBUG
+   privileged: true
+   network_mode: "host"
+
+volumes:
+  tftp_data:
+  nfs_data:
