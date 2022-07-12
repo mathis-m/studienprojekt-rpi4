@@ -82,12 +82,12 @@ loop:
     add     r0, r5, #GPCLR0 @ calc GPCLR0 address
     ldr     r2, [r0]        @ get entire GPCLR0 register
 
-    mov     r3, #1          @ turn on bit
+    mov     r3, #1          @ turn off bit
     lsl     r3, r3, #PIN    @ shift bit to pin position
     orr     r2, r2, r3      @ set bit
     str     r2, [r0]        @ update register
 
-    mov     r0, #SLEEP_IN_S    @ wait a second
+    mov     r0, #SLEEP_IN_S @ wait a second
     bl      sleep
     b       loop
 
