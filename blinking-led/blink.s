@@ -19,6 +19,6 @@ main:
     str r1,[r0,#GPFSEL2]                @ Store the offset for GPIO21 select addr
 
     @ Test turn on
-    ldr r1,=GPIOVAL                     @ Load set value
-    str r1, [r0,#GPSET0]                @ Store it in set register
+    ldr r1,=GPIO21_SET                  @ Load set value
+    str r1,[r0,#GPSET0]                @ Store it in set register
 
