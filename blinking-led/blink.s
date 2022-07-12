@@ -1,4 +1,4 @@
-.global _start
+.global main
 
 @ constants for GPIO21
 @ see docu https://datasheets.raspberrypi.com/bcm2711/bcm2711-peripherals.pdf
@@ -11,7 +11,7 @@
 .equ GPIO21_SET, 0x200000               @ Value for setting GPIO21 (1 << 21)
 
 
-_start:
+main:
     ldr r0,=BASE_GPIO_ADDR
 
     @ Set GPIO21 as output
@@ -20,4 +20,5 @@ _start:
 
     @ Test turn on
     ldr r1,=GPIOVAL                     @ Load set value
-    str r1, [r0,#GPSET0]               @ Store it in set register
+    str r1, [r0,#GPSET0]                @ Store it in set register
+
