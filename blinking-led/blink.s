@@ -5,11 +5,10 @@
 @ GPCLR0 [Offset: 0x28] responsible for GPIO Pins 0 to 31
 @ GPSET0 [Offest: 0x1C] responsible for GPIO Pins 0 to 31
 
+@ GPOI21 Related
 .equ    GPFSEL2, 0x08   @ function register offset
 .equ    GPCLR0, 0x28    @ clear register offset
 .equ    GPSET0, 0x1c    @ set register offset
-
-@ Offsets for GPIO21
 .equ    GPFSEL2_GPIO21_MASK, 0b111000   @ Mask for fn register
 .equ    MAKE_GPIO21_OUTPUT, 0b1000      @ use pin for ouput
 .equ    PIN, 21                         @ Used to set PIN high / low
