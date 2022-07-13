@@ -67,7 +67,6 @@ loop:
 
 @ Turn on
     add     r0, r5, #GPSET0 @ calc GPSET0 address
-    ldr     r2, [r0]        @ get entire GPSET0 register
 
     mov     r3, #1          @ turn on bit
     lsl     r3, r3, #PIN    @ shift bit to pin position
@@ -79,7 +78,6 @@ loop:
 
 @ Turn off
     add     r0, r5, #GPCLR0 @ calc GPCLR0 address
-    ldr     r2, [r0]        @ get entire GPCLR0 register
 
     mov     r3, #1          @ turn off bit
     lsl     r3, r3, #PIN    @ shift bit to pin position
