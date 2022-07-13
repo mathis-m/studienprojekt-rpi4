@@ -100,25 +100,24 @@ main:
 loop:
 
 @ Turn on
-    add     r0, r5, GPSET_N_OFFSET  @ calc GPSETn address
-    ldr     r2, [r0]                @ get entire GPSET0 register
-
     mov     r3, #1              @ turn on bit
     lsl     r3, r3, #GPIO_NUM   @ shift bit to pin position
     orr     r2, r2, r3          @ set bit
-    str     r2, [r0]            @ update register
+
+    add     r0, r5, GPSET_N_OFFSET  @ calc GPSETn address
+    str     r2, [r0]                @ update register
 
     mov     r0, #SLEEP_IN_S @ wait a second
     bl      sleep
 
 @ Turn off
-    add     r0, r5, GPCLR_N_OFFSET  @ calc GPCLRn address
-    ldr     r2, [r0]                @ get entire GPCLRn register
 
     mov     r3, #1              @ turn off bit
     lsl     r3, r3, #GPIO_NUM   @ shift bit to pin position
     orr     r2, r2, r3          @ set bit
-    str     r2, [r0]            @ update register
+    
+    add     r0, r5, GPCLR_N_OFFSET  @ calc GPCLRn address
+    str     r2, [r0]                @ update register
 
     mov     r0, #SLEEP_IN_S @ wait a second
     bl      sleep
