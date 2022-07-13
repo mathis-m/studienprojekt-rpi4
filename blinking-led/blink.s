@@ -1,8 +1,6 @@
 @ mmap part taken from by https://bob.cs.sonoma.edu/IntroCompOrg-RPi/sec-gpio-mem.html
 
 @ Constants for blink at GPIO21
-@ GPIO_NUM can be set to any GPIO PIN
-.equ    GPIO_NUM, 21    @ Target GPIO PIN
 
 @ GPOI Related
 .equ    GPCLR0, 0x28    @ clear register offset
@@ -26,12 +24,23 @@
     .section .rodata
 device:
     .asciz  "/dev/gpiomem"
-
+usingPin:     
+    .asciz  "Using GPIO PIN #%d\n"
 
 @ The program
     .text
     .global main
 main:
+@ Read GPIO PIN number from argv
+    ldr     r4, [r1, #4]    @ load first arg
+    mov     r0, r4          @ prepare arg0 for atoi
+    bl      atoi            @ parse string arg to int
+    mov     r11, r0         @ store GPIO PIN number in r11
+    
+    mov     r1, r0          @ prepare arg1 for printf
+    ldr     r0, =usingPin   @ prepare arg0 for printf
+    bl      printf
+    
 @ Open /dev/gpiomem for read/write and syncing
     ldr     r1, O_RDWR_O_SYNC   @ flags for accessing device
     ldr     r0, mem_fd          @ address of /dev/gpiomem
@@ -58,8 +67,6 @@ main:
     GPFSEL_MAKE_OUTPUT_VAL  .req r10     @ Value for bitwise or to make PIN an output
 
 @ Calculate GPIO register offsets and util values
-    mov     r11, #GPIO_NUM      @ Store Target PIN NUM for calc
-
     @ Calculate GPFSELn offset (GPFSEL0 starts at offset 0x0)
     mov     r3, #10                 @ divisor (each GPFSEL register has place for 10 PIN Fields)
     udiv    r0, r11, r3             @ GPFSEL number = pin num / 10
@@ -101,7 +108,7 @@ loop:
 
 @ Turn on
     mov     r3, #1              @ turn on bit
-    lsl     r3, r3, #GPIO_NUM   @ shift bit to pin position
+    lsl     r3, r3, r11         @ shift bit to pin position
     orr     r2, r2, r3          @ set bit
 
     add     r0, r5, GPSET_N_OFFSET  @ calc GPSETn address
@@ -113,7 +120,7 @@ loop:
 @ Turn off
 
     mov     r3, #1              @ turn off bit
-    lsl     r3, r3, #GPIO_NUM   @ shift bit to pin position
+    lsl     r3, r3, r11         @ shift bit to pin position
     orr     r2, r2, r3          @ set bit
     
     add     r0, r5, GPCLR_N_OFFSET  @ calc GPCLRn address
