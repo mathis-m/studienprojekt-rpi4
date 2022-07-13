@@ -8,13 +8,6 @@
 .equ    GPCLR0, 0x28    @ clear register offset
 .equ    GPSET0, 0x1c    @ set register offset
 
-@ Alias some registers that will be prepopulated and used later on
-GPFSEL_N_OFFSET         .req r6     @ Will hold offset to GPFSELn register for GPIO_NUM
-GPSET_N_OFFSET          .req r7     @ Will hold offset to GPCLRn register for GPIO_NUM
-GPCLR_N_OFFSET          .req r8     @ Will hold offset to GPSETn register for GPIO_NUM
-GPFSEL_MASK             .req r9     @ Mask for setting function for GPIO_NUM
-GPFSEL_MAKE_OUTPUT_VAL  .req r10     @ Value for bitwise or to make PIN an output
-
 @ Args for mmap
 .equ    OFFSET_FILE_DESCRP, 0   @ file descriptor
 .equ    mem_fd_open, 3
@@ -56,6 +49,13 @@ main:
     str     r0, [sp, #ADDRESS_ARG]          @ r0=location of GPIO
     bl      mmap
     mov     r5, r0           @ save the virtual memory address in r5
+
+@ Alias some registers that will be prepopulated and used later on
+    GPFSEL_N_OFFSET         .req r6     @ Will hold offset to GPFSELn register for GPIO_NUM
+    GPSET_N_OFFSET          .req r7     @ Will hold offset to GPCLRn register for GPIO_NUM
+    GPCLR_N_OFFSET          .req r8     @ Will hold offset to GPSETn register for GPIO_NUM
+    GPFSEL_MASK             .req r9     @ Mask for setting function for GPIO_NUM
+    GPFSEL_MAKE_OUTPUT_VAL  .req r10     @ Value for bitwise or to make PIN an output
 
 @ Calculate GPIO register offsets and util values
     mov     r11, #GPIO_NUM      @ Store Target PIN NUM for calc
