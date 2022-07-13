@@ -50,12 +50,12 @@ main:
     bl      mmap
     mov     r5, r0           @ save the virtual memory address in r5
 
-@ Alias some registers that will be prepopulated and used later on
-    GPFSEL_N_OFFSET         .req r6     @ Will hold offset to GPFSELn register for GPIO_NUM
-    GPSET_N_OFFSET          .req r7     @ Will hold offset to GPCLRn register for GPIO_NUM
-    GPCLR_N_OFFSET          .req r8     @ Will hold offset to GPSETn register for GPIO_NUM
-    GPFSEL_MASK             .req r9     @ Mask for setting function for GPIO_NUM
-    GPFSEL_MAKE_OUTPUT_VAL  .req r10     @ Value for bitwise or to make PIN an output
+@ Lets define some registers that will be prepopulated and used later on
+    @ r6    Will hold offset to GPFSELn register for GPIO_NUM
+    @ r7    Will hold offset to GPCLRn register for GPIO_NUM
+    @ r8    Will hold offset to GPSETn register for GPIO_NUM
+    @ r9    Mask for setting function for GPIO_NUM
+    @ r10   Value for bitwise or to make PIN an output
 
 @ Calculate GPIO register offsets and util values
     mov     r11, #GPIO_NUM      @ Store Target PIN NUM for calc
@@ -64,16 +64,16 @@ main:
     mov     r3, #10                 @ divisor (each GPFSEL register has place for 10 PIN Fields)
     udiv    r0, r11, r3             @ GPFSEL number = pin num / 10
 
-    lsl     GPFSEL_N_OFFSET, r0, #2 @ each GPFSEL register has size of 4 bytes => shift reg num by 2 == offset
+    lsl     r6, r0, #2 @ each GPFSEL register has size of 4 bytes => shift reg num by 2 == offset
     
     @ Calculate GPSETn / GPCLRn offset
     mov     r3, #32         @ divisor (each GPSET / GPCLR register has place for 32 PIN Fields)
     udiv    r0, r11, r3     @ GPSET / GPCLR number = PIN NUM / 32
 
-    lsl     GPSET_N_OFFSET, r0, #2                      @ each GPSET register has size of 4 bytes => shift reg num by 2 == offset to GPSET0
-    mov     GPCLR_N_OFFSET, GPSET_N_OFFSET              @ copy to GPCLR_N_OFFSET
-    add     GPSET_N_OFFSET, GPSET_N_OFFSET, #GPSET0     @ calculate offset using start offset
-    add     GPCLR_N_OFFSET, GPCLR_N_OFFSET, #GPCLR0     @ calculate offset using start offset
+    lsl     r7, r0, #2                      @ each GPSET register has size of 4 bytes => shift reg num by 2 == offset to GPSET0
+    mov     r8, r7              @ copy to r8
+    add     r7, r7, #GPSET0     @ calculate offset using start offset
+    add     r8, r8, #GPCLR0     @ calculate offset using start offset
 
     @ Calculate util values based on pin num
     mul     r1, r0, r3      @ compute remainder
@@ -82,17 +82,17 @@ main:
     mov     r3, r1                      @ need to multiply pin
     add     r1, r1, r3, lsl #1          @    position by 3 (each pin has 3 bits in GPFSELn)
 
-    mov     GPFSEL_MASK, #BIT_3_MASK    @ 3 bit high mask
-    lsl     GPFSEL_MASK, GPFSEL_MASK, r1@ shift mask to pin position (shift= 3 * pin num)
+    mov     r9, #BIT_3_MASK    @ 3 bit high mask
+    lsl     r9, r9, r1@ shift mask to pin position (shift= 3 * pin num)
 
-    mov     GPFSEL_MAKE_OUTPUT_VAL, #1                          @ make output bit
-    lsl     GPFSEL_MAKE_OUTPUT_VAL, GPFSEL_MAKE_OUTPUT_VAL, r1  @ shift bit to pin position[0] (shift= 3 * pin num)
+    mov     r10, #1                          @ make output bit
+    lsl     r10, r10, r1  @ shift bit to pin position[0] (shift= 3 * pin num)
 
 @ Set up the GPIO pin funtion register in programming memory
-    add     r0, r5, GPFSEL_N_OFFSET         @ calculate address for GPFSELn
+    add     r0, r5, r6         @ calculate address for GPFSELn
     ldr     r2, [r0]                        @ get entire GPFSELn register
-    bic     r2, r2, #GPFSEL_MASK            @ clear pin field
-    orr     r2, r2, #GPFSEL_MAKE_OUTPUT_VAL @ enter function code
+    bic     r2, r2, #r9            @ clear pin field
+    orr     r2, r2, #r10 @ enter function code
     str     r2, [r0]                        @ update register
 
 
@@ -100,7 +100,7 @@ main:
 loop:
 
 @ Turn on
-    add     r0, r5, #GPSET_N_OFFSET @ calc GPSETn address
+    add     r0, r5, #r7 @ calc GPSETn address
     ldr     r2, [r0]                @ get entire GPSET0 register
 
     mov     r3, #1              @ turn on bit
@@ -112,7 +112,7 @@ loop:
     bl      sleep
 
 @ Turn off
-    add     r0, r5, #GPCLR_N_OFFSET @ calc GPCLRn address
+    add     r0, r5, #r8 @ calc GPCLRn address
     ldr     r2, [r0]                @ get entire GPCLRn register
 
     mov     r3, #1              @ turn off bit
